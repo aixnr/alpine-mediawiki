@@ -40,11 +40,11 @@ RUN rm -Rf /etc/php7/php-fpm.conf
 ADD configs/php-fpm.conf /etc/php7/php-fpm.conf
 
 # Add user www, chown MediaWiki directory. Assign UID of 1000 to match host.
+# The directory /var/www/data is used by sqlite.
 RUN addgroup -g 1000 -S www && \
     adduser -S -D -H -u 1000 www -G www && \
     chown -R www /var/www/mediawiki && \
-    mkdir -p /var/www/data && \
-    chmod a+w /var/www/data
+    mkdir -p /var/www/data && chmod a+w /var/www/data
 
 # Set entrypoint
 ENTRYPOINT ["/usr/bin/supervisord", "-nc", "/etc/supervisord.conf"]
