@@ -1,0 +1,33 @@
+version: '3.2'
+services:
+  mediawiki:
+    image: alpine-mwiki
+    restart: always
+    ports:
+      - 80:80
+      - 9001:9001
+    links:
+      - pg
+    depends_on:
+      - pg
+    volumes:
+      - wikidata:/var/www/mediawiki
+    environment:
+      MEDIAWIKI_DB_TYPE: postgres
+      MEDIAWIKI_DB_HOST: pg
+      MEDIAWIKI_DB_USER: wiki
+      MEDIAWIKI_DB_PASSWORD: wiki
+      MEDIAWIKI_DB_NAME: wiki
+  pg:
+    image: postgres:10-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: wiki
+      POSTGRES_USER: wiki
+      POSTGRES_PASSWORD: wiki
+    volumes:
+      - wikidb:/var/lib/postgresql/data
+
+volumes:
+  wikidata:
+  wikidb:
