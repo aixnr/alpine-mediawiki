@@ -7,7 +7,7 @@ RUN apk add --update --no-cache bash \
 
 # Install required PHP v7 packages
 RUN apk add --update --no-cache \
-    php7-fpm php7-intl php7-pdo php7-pdo_sqlite php7-mysqlnd php7-pdo_mysql
+    php7 php7-fpm php7-intl php7-pdo php7-pdo_sqlite php7-mysqlnd php7-pdo_mysql
 
 # Install PHP v7 extras
 RUN apk add --update --no-cache \
