@@ -14,10 +14,22 @@ RUN apk add --update --no-cache \
     php7-curl php7-gd php7-memcached php7-xml php7-openssl php7-json php7-mcrypt \
     php7-mbstring php7-ctype php7-iconv php7-fileinfo php7-dom php7-apcu
 
-# Install MediaWiki 1.30.0
-ADD https://releases.wikimedia.org/mediawiki/1.30/mediawiki-1.30.0.tar.gz mediawiki.tar.gz
-RUN tar xvzf mediawiki.tar.gz && mv mediawiki-1.30.0 /var/www/mediawiki
-RUN rm -rf mediawiki.tar.gz
+# Install MediaWiki 1.30.0 (direct download)
+#ADD https://releases.wikimedia.org/mediawiki/1.30/mediawiki-1.30.0.tar.gz mediawiki.tar.gz
+#RUN tar xvzf mediawiki.tar.gz && mv mediawiki-1.30.0 /var/www/mediawiki
+#RUN rm -rf mediawiki.tar.gz
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+# Install MediaWiki 1.30.0 (git clone)
+ENV VERSION REL1_30
+RUN mkdir -p /var/www && \
+    git clone --depth 1 -b $VERSION \
+    https://gerrit.wikimedia.org/r/p/mediawiki/core.git var/www/mediawiki && \
+    cd /var/www/mediawiki && \
+    git submodule update --init && \
+    composer install --no-dev
 
 # Important Directories
 RUN mkdir -p /etc/nginx && \
