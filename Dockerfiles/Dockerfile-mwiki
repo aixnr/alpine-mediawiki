@@ -7,7 +7,7 @@ RUN apk add --update --no-cache bash \
 
 # Install required PHP v7 packages
 RUN apk add --update --no-cache \
-    php7 php7-fpm php7-intl php7-pdo php7-pdo_sqlite php7-mysqlnd php7-pdo_mysql
+    php7 php7-fpm php7-intl php7-pdo php7-pdo_sqlite php7-pdo_pgsql php7-pgsql
 
 # Install PHP v7 extras
 RUN apk add --update --no-cache \
@@ -39,8 +39,8 @@ ADD configs/nginx.conf /etc/nginx/nginx.conf
 RUN rm -Rf /etc/php7/php-fpm.conf
 ADD configs/php-fpm.conf /etc/php7/php-fpm.conf
 
-# Add user www, chown MediaWiki directory. Assign UID of 1000 to match host.
-# The directory /var/www/data is used by sqlite.
+# Add user www, chown MediaWiki directory. Assign UID of 1000 to match host
+# The directory /var/www/data is used by sqlite
 RUN addgroup -g 1000 -S www && \
     adduser -S -D -H -u 1000 www -G www && \
     chown -R www /var/www/mediawiki && \
