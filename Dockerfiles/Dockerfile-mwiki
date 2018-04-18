@@ -1,0 +1,50 @@
+FROM alpine:3.7
+MAINTAINER Aizan Fahri <aizanfahri@gmail.com>
+
+# Install required base packages
+RUN apk add --update --no-cache bash \
+    openssh-client wget nginx supervisor curl git diffutils
+
+# Install required PHP v7 packages
+RUN apk add --update --no-cache \
+    php7-fpm php7-intl php7-pdo php7-pdo_sqlite php7-mysqlnd php7-pdo_mysql
+
+# Install PHP v7 extras
+RUN apk add --update --no-cache \
+    php7-curl php7-gd php7-memcached php7-xml php7-openssl php7-json php7-mcrypt \
+    php7-mbstring php7-ctype php7-iconv php7-fileinfo php7-dom php7-apcu
+
+# Install MediaWiki 1.30.0
+ADD https://releases.wikimedia.org/mediawiki/1.30/mediawiki-1.30.0.tar.gz mediawiki.tar.gz
+RUN tar xvzf mediawiki.tar.gz && mv mediawiki-1.30.0 /var/www/mediawiki
+RUN rm -rf mediawiki.tar.gz
+
+# Important Directories
+RUN mkdir -p /etc/nginx && \
+    mkdir -p /run/nginx && \
+    mkdir -p /var/log/supervisor
+
+# Expose ports for nginx and supervisord
+EXPOSE 80
+EXPOSE 9001
+
+# Copy supervisord config
+ADD configs/supervisord.conf /etc/supervisord.conf
+
+# Copy ngix config
+RUN rm -Rf /etc/nginx/nginx.conf
+ADD configs/nginx.conf /etc/nginx/nginx.conf
+
+# Copy php-fpm config
+RUN rm -Rf /etc/php7/php-fpm.conf
+ADD configs/php-fpm.conf /etc/php7/php-fpm.conf
+
+# Add user www, chown MediaWiki directory. Assign UID of 1000 to match host.
+RUN addgroup -g 1000 -S www && \
+    adduser -S -D -H -u 1000 www -G www && \
+    chown -R www /var/www/mediawiki && \
+    mkdir -p /var/www/data && \
+    chmod a+w /var/www/data
+
+# Set entrypoint
+ENTRYPOINT ["/usr/bin/supervisord", "-nc", "/etc/supervisord.conf"]
