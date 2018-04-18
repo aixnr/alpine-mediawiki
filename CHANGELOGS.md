@@ -57,3 +57,26 @@ This trick is possible because during the creation of this Docker image, the `UI
 **18 Apr 2018 (Wed)** Tweaking Mediawiki image.
 
 First change: so instead of download the `*.tar.gz` archive, I decided to switch to Git. Current stable branch is `REL1_30`, which is specified in the `Dockerfile-mwiki`. Composer is needed for this to work.
+
+Create a network (since `link` is a legacy feature to connect our containers. Then run a MariaDB v10 container and the MediaWiki container on the same network.
+
+```
+# Define network
+docker network create mediawiki
+
+# Run the database container with --network flag.
+docker run -d -e MYSQL_ROOT_PASSWORD=password --network mediawiki --name mariadb mariadb:10
+
+# Run MediaWiki in the same network.
+docker run --name alpine-wiki -v wiki-data:/var/www/mediawiki --network mediawiki --rm -p 80:80 -p 9001:9001 -it alpine-mwiki
+
+# To test, exec into alpine-wiki container and ping mariadb
+docker exec -it alpine-wiki /bin/bash
+ping mariadb
+```
+
+Problem: during web installation, the MediaWiki does not see MariaDB. To fix this, more codes. Refer here: https://github.com/bitnami/bitnami-docker-mediawiki
+
+```
+some codes here lol
+```

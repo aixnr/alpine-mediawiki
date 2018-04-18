@@ -1,6 +1,6 @@
 ## MediaWiki, Parsoid, and MariaDB with Docker
 
-This is an attempt to use Alpine 3.7 as the base image for Mediawiki 1.30 with PHP v7 (with FPM) and Nginx. There is another container for Parsoid (insert version here) that runs with NodeJS (insert version here). As the database backend (specified in `docker-compose.yml`), the database backend is MariaDB (insert version here).
+This is an attempt to use Alpine 3.7 as the base image for Mediawiki 1.30 with PHP v7.1.16 (with FPM) and Nginx. There is another container for Parsoid (insert version here) that runs with NodeJS (insert version here). As the database backend (specified in `docker-compose.yml`), the database backend is MariaDB (insert version here).
 
 ### The Images
 
@@ -36,6 +36,7 @@ Here we use the `bindfs` to mount this volume into `./data` directory. `BindFS` 
 
 - [ ] Change download method from `wget` to `git clone`.
 - [ ] Add `docker-compose.yml`.
+    - [ ] Mount logo as ReadOnly in Compose.
 - [ ] Create Alpine 3.7 image for Parsoid.
 
 ### Acknowledgements
