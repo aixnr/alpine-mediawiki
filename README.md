@@ -26,63 +26,26 @@ To build `alpine-parsoid`, here is the command:
 docker build -f Dockerfiles/Dockerfile-parsoid -t alpine-parsoid .
 ```
 
-Attention! This `alpine-parsoid` container is hardcoded to use the MediaWiki endpoint URL `http://192.168.56.101/api.php`. This is my local VM for development. See `configs/parsoid-config.yaml` before proceeding.
+During this build, the code will (briefly):
+
+1. Install base packages.
+2. Install `nodejs` and `nodejs-npm`.
+3. Install Parsoid from source (Mediawiki's Gerrit).
+4. Running Parsoid with user `parsoid` and expose port 8000.
+
+Attention! This `alpine-parsoid` container is hardcoded to use the MediaWiki endpoint URL `http://192.168.56.101/api.php`. This is my local VM for development. See `configs/parsoid-config.yaml` and alter it before proceeding.
 
 ### The Containers
 
-To retain sanity, here's the content for `docker-compose.yml`
-
-```
-version: '3.2'
-services:
-  mediawiki:
-    image: alpine-mwiki
-    restart: always
-    ports:
-      - 80:80
-      - 9001:9001
-    links:
-      - pg
-    depends_on:
-      - pg
-    volumes:
-      - wikidata:/var/www/mediawiki
-    environment:
-      MEDIAWIKI_DB_TYPE: postgres
-      MEDIAWIKI_DB_HOST: pg
-      MEDIAWIKI_DB_USER: wiki
-      MEDIAWIKI_DB_PASSWORD: wiki
-      MEDIAWIKI_DB_NAME: wiki
-  pg:
-    image: postgres:10-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: wiki
-      POSTGRES_USER: wiki
-      POSTGRES_PASSWORD: wiki
-    volumes:
-      - wikidb:/var/lib/postgresql/data
-  parsoid:
-    image: alpine-parsoid
-    restart: always
-    ports: 
-      - 8000:8000
-    volumes:
-      - parsoid:/var/lib/parsoid
-
-volumes:
-  wikidata:
-  wikidb:
-  parsoid:
-```
+To retain sanity, I go with `docker-compose.yml`. Take a good look at it before spinning up the containers (there are three of them). Might want to change password, etc.
 
 Then, issue this command:
 
 ```
-# See output
+# Output log to terminal.
 docker-compose up
 
-# Run as daemon
+# Run as daemon.
 docker-compose up -d
 ```
 
@@ -100,7 +63,7 @@ Here we use the `bindfs` to mount this volume into `./data_wiki` directory. `Bin
 # Create directory.
 mkdir data_wiki
 
-# Mount with bindfs
+# Mount with bindfs.
 sudo bindfs /var/lib/docker/volumes/alpinemediawiki_wikidata/_data data_wiki
 ```
 
@@ -133,7 +96,7 @@ $wgVirtualRestConfig['modules']['parsoid'] = array(
 1. I tried using MariaDB at first. I could not get the MediaWiki to talk to MariaDB instance after trying couple of times. Miraculously, I tried once with PostgreSQL and it worked without fiddling too much.
 2. Also, I am using `postgres:10-alpine` (official). It is extremely small at 39.5 MB for the Docker image. MariaDB (Debian) is at 396 MB.
 3. Please run the Nginx and PHP-FPM with daemonize turned off. Else, it won't work. This has something to do with the fact that `supervisord` is daemonizing them.
-4. BindFS is pretty cool. It makes debugging a lot less painful.
+4. BindFS is pretty cool. It makes debugging a lot less painful. It is kind of hacky, but it is a better alternative.
 5. I changed from downloading `*.tar.gz` to `git clone`. Fine grain control is always better.
 6. The VisualEditor extension isn't packaged by default. If you look into the `Dockerfiles/Dockerfile-mwiki`, you see there I `git clone` it.
 7. When specifying ENV, please don't include whitespace. For example, `PARSOID_USER=parsoid` instead of `PARSOID_USER = parsoid`.
@@ -149,7 +112,10 @@ $wgVirtualRestConfig['modules']['parsoid'] = array(
 - [X] ~Create Alpine 3.7 image for Parsoid~ ~There's already a `node:9-alpine`. Go from there~ Just kidding. Used `alpine:3.7` instead due to UID conflict.
 - [ ] How to perform backup and/or migration?
 - [ ] Test behavior with UFW on host.
+- [ ] Test running on HTTPS port 443 on host with Caddy for automated Let's Encrypt.
 
 ### Acknowledgements
 
-Thanks to (insert list here).
+1. I learned the [BindFS trick here on GitHub](https://github.com/moby/moby/issues/26872).
+2. When adding & assigning user in Alpine, I referred to [this thread on GitHub](https://github.com/mhart/alpine-node/issues/48).
+3. I was inspired by this [Docker Mediawiki setup](https://github.com/kristophjunge/docker-mediawiki). However, I was more interested in making separate containers instead of running everything in a single container.
