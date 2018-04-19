@@ -1,6 +1,6 @@
 ## MediaWiki, Parsoid, and PostgreSQL with Docker
 
-This is an attempt to use Alpine 3.7 as the base image for Mediawiki 1.30 with PHP v7.1.16 (with FPM) and Nginx. There is another container for Parsoid (insert version here) that runs with NodeJS (insert version here). As the database backend (specified in `docker-compose.yml`), it is PostgreSQL v10 (Alpine).
+This is an attempt to use Alpine 3.7 as the base image for Mediawiki 1.30 with PHP v7.1.16 (with FPM) and Nginx. There is another container for Parsoid (v0.8.0) that runs with NodeJS (v8.9.3). As the database backend (specified in `docker-compose.yml`), it is PostgreSQL v10 (Alpine).
 
 ### The Images
 
