@@ -12,12 +12,8 @@ RUN apk add --update --no-cache \
 # Install PHP v7 extras
 RUN apk add --update --no-cache \
     php7-curl php7-gd php7-memcached php7-xml php7-openssl php7-json php7-mcrypt \
-    php7-mbstring php7-ctype php7-iconv php7-fileinfo php7-dom php7-apcu
-
-# Install MediaWiki 1.30.0 (direct download)
-#ADD https://releases.wikimedia.org/mediawiki/1.30/mediawiki-1.30.0.tar.gz mediawiki.tar.gz
-#RUN tar xvzf mediawiki.tar.gz && mv mediawiki-1.30.0 /var/www/mediawiki
-#RUN rm -rf mediawiki.tar.gz
+    php7-mbstring php7-ctype php7-iconv php7-fileinfo php7-dom php7-apcu php7-phar \
+    php7-tokenizer php7-simplexml php7-xmlwriter
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
@@ -30,6 +26,12 @@ RUN mkdir -p /var/www && \
     cd /var/www/mediawiki && \
     git submodule update --init && \
     composer install --no-dev
+
+# Install VisualEditor Extension
+RUN cd /var/www/mediawiki/extensions && \
+    git clone --depth 1 -b $VERSION \
+    https://gerrit.wikimedia.org/r/p/mediawiki/extensions/VisualEditor.git && \
+    cd VisualEditor && git submodule update --init
 
 # Important Directories
 RUN mkdir -p /etc/nginx && \
