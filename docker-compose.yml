@@ -2,6 +2,7 @@ version: '3.2'
 services:
   mediawiki:
     image: alpine-mwiki
+    container_name: mediawiki
     restart: always
     ports:
       - 80:80
@@ -20,6 +21,7 @@ services:
       MEDIAWIKI_DB_NAME: wiki
   pg:
     image: postgres:10-alpine
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_DB: wiki
@@ -29,6 +31,7 @@ services:
       - wikidb:/var/lib/postgresql/data
   parsoid:
     image: alpine-parsoid
+    container_name: parsoid
     restart: always
     ports: 
       - 8000:8000
