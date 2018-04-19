@@ -1,0 +1,14 @@
+worker_heartbeat_timeout: 300000
+
+num_workers: 2 
+
+logging:
+    level: info
+
+services:
+  - module: lib/index.js
+    entrypoint: apiServiceWorker
+    conf:
+        mwApis:
+        - uri: 'http://192.168.56.101/api.php'
+        serverPort: 8000
