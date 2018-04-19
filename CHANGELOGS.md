@@ -166,3 +166,29 @@ mkdir data_wiki
 # bind, no need to map user because both have same UID.
 sudo bindfs /var/lib/docker/volumes/alpinemediawiki_wikidata/_data data_wiki
 ```
+
+**18 Apr 2018 (Wed)** NodeJS & Parsoid.
+
+It appears that Parsoid's `config.yaml` requires hardcoded URL. During build, the `config.yaml` is supplied from `configs/parsoid-config.yaml`. To change the config of an already running Parsoid container, there are 2 ways: mount Parsoid's `config.yaml` by explicitly defining it in `docker-compose.yaml` or specify a Docker volume with `-v` then later mount it to edit the `config.yaml`.
+
+Build the image:
+
+```
+docker build -f Dockerfiles/Dockerfile-parsoid -t alpine-parsoid .
+```
+
+Run to debug (output to terminal, destroy upon exit).
+
+```
+docker run --name parsoid -it -p 8000:8000 --rm alpine-parsoid
+```
+
+The hardcoded configuration is pointing to `http://192.168.56.101/api.php`. This is the IP address of my VM linux box. Change it before build. In `LocalSettings.php`, here's the directive:
+
+```
+$wgVirtualRestConfig['modules']['parsoid'] = array(
+  'url' => 'http://192.168.56.101:8000',
+);
+```
+
+No restart needed. Parsoid runs at 120 MB. Not too bad. Postgres runs at 6 MB, main container runs at 56 MB. So roughly the whole setup runs less than 200 MB.

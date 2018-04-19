@@ -20,6 +20,14 @@ During this build, the code will (briefly):
 6. Add user `www` for PHP7-FPM with UID of `1000` and GID of `1000`.
 7. Set `ENTRYPOINT` with `supervisord`.
 
+To build `alpine-parsoid`, here is the command:
+
+```
+docker build -f Dockerfiles/Dockerfile-parsoid -t alpine-parsoid .
+```
+
+Attention! This `alpine-parsoid` container is hardcoded to use the MediaWiki endpoint URL `http://192.168.56.101/api.php`. This is my local VM for development. See `configs/parsoid-config.yaml` before proceeding.
+
 ### The Containers
 
 To retain sanity, here's the content for `docker-compose.yml`
@@ -54,10 +62,18 @@ services:
       POSTGRES_PASSWORD: wiki
     volumes:
       - wikidb:/var/lib/postgresql/data
+  parsoid:
+    image: alpine-parsoid
+    restart: always
+    ports: 
+      - 8000:8000
+    volumes:
+      - parsoid:/var/lib/parsoid
 
 volumes:
   wikidata:
   wikidb:
+  parsoid:
 ```
 
 Then, issue this command:
@@ -69,6 +85,8 @@ docker-compose up
 # Run as daemon
 docker-compose -d
 ```
+
+During the MediaWiki installation "Connect to database", the field for "Databae hosts" has to be set to `pg` instead of `localhost`.
 
 ### Mount Volume with BindFS
 
@@ -98,20 +116,37 @@ sudo bindfs --mirror=fera /var/lib/docker/volumes/alpinemediawiki_wikidb/_data d
 
 This will map the Docker volume correctly with user `fera` (depends on the `$USER` you have on host machine, mine is `fera`). By issuing `ls -l data_pg`, the file permission is assigned to `fera` instead of `root`.
 
+Then, place the `LocalSettings.php` inside the `data_wiki` directory, then set permission with `chmod 775`.
+
+### VisualEditor and Parsoid
+
+This is my minimal `LocalSettings.php` for VisualEditor
+
+```
+$wgVirtualRestConfig['modules']['parsoid'] = array(
+  'url' => 'http://192.168.56.101:8000',
+);
+```
+
 ### Notes
 
 1. I tried using MariaDB at first. I could not get the MediaWiki to talk to MariaDB instance after trying couple of times. Miraculously, I tried once with PostgreSQL and it worked without fiddling too much.
 2. Also, I am using `postgres:10-alpine` (official). It is extremely small at 39.5 MB for the Docker image. MariaDB (Debian) is at 396 MB.
 3. Please run the Nginx and PHP-FPM with daemonize turned off. Else, it won't work. This has something to do with the fact that `supervisord` is daemonizing them.
-4. BindFS is pretty cool.
+4. BindFS is pretty cool. It makes debugging a lot less painful.
+5. I changed from downloading `*.tar.gz` to `git clone`. Fine grain control is always better.
+6. The VisualEditor extension isn't packaged by default. If you look into the `Dockerfiles/Dockerfile-mwiki`, you see there I `git clone` it.
+7. When specifying ENV, please don't include whitespace. For example, `PARSOID_USER=parsoid` instead of `PARSOID_USER = parsoid`.
 
 ### TODO
 
-- [ ] Change download method from `wget` to `git clone`.
+- [X] Change download method from `wget` to `git clone`.
 - [ ] Compose-related.
     - [X] Attempt at creating baseline `docker-compose.yml`.
     - [ ] Mount logo as ReadOnly in Compose.
-- [ ] Create Alpine 3.7 image for Parsoid.
+- [X] ~Create Alpine 3.7 image for Parsoid~ There's already a `node:9-alpine`. Go from there.
+- [ ] How to perform backup and/or migration?
+- [ ] Test behavior with UFW on host.
 
 ### Acknowledgements
 
