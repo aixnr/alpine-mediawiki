@@ -138,6 +138,7 @@ $wgVirtualRestConfig['modules']['parsoid'] = array(
 6. The VisualEditor extension isn't packaged by default. If you look into the `Dockerfiles/Dockerfile-mwiki`, you see there I `git clone` it.
 7. When specifying ENV, please don't include whitespace. For example, `PARSOID_USER=parsoid` instead of `PARSOID_USER = parsoid`.
 8. As mentioned above, the Parsoid's `config.yaml` is hardcoded. Proceed with caution.
+9. Expect problems when running Parsoid for private MediaWiki. [See here](https://www.mediawiki.org/wiki/Extension:VisualEditor), then scroll down.
 
 ### TODO
 
