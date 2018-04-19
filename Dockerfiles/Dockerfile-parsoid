@@ -1,0 +1,28 @@
+FROM alpine:3.7
+MAINTAINER Aizan Fahri <aizanfahri@gmail.com>
+
+# Install required base packages
+RUN apk add --update --no-cache bash \
+    openssh-client wget nginx curl git diffutils build-base python
+
+# Install NodeJS & NPM, then install Parsoid
+RUN apk add --no-cache nodejs nodejs-npm
+
+# For MediaWiki REL1_30, use Parsoid 0.8.0
+ENV PARSOID_USER=parsoid \
+    PARSOID_HOME=/var/lib/parsoid \
+    PARSOID_VERSION=v0.8.0
+
+RUN adduser -S -D -H -u 1000 $PARSOID_USER && \
+    mkdir -p $PARSOID_HOME && \
+    git clone -b $PARSOID_VERSION --single-branch --depth 1 --quiet \
+    https://gerrit.wikimedia.org/r/p/mediawiki/services/parsoid $PARSOID_HOME && \
+    cd $PARSOID_HOME && npm install
+
+# Copy config
+ADD configs/parsoid-config.yaml $PARSOID_HOME/config.yaml
+
+# Run Parsoid as $PARSOID_USER
+EXPOSE 8000
+USER $PARSOID_USER
+CMD node $PARSOID_HOME/bin/server.js -c $PARSOID_HOME/config.yaml
