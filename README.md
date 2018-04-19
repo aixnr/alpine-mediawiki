@@ -83,7 +83,7 @@ Then, issue this command:
 docker-compose up
 
 # Run as daemon
-docker-compose -d
+docker-compose up -d
 ```
 
 During the MediaWiki installation "Connect to database", the field for "Databae hosts" has to be set to `pg` instead of `localhost`.
@@ -137,6 +137,7 @@ $wgVirtualRestConfig['modules']['parsoid'] = array(
 5. I changed from downloading `*.tar.gz` to `git clone`. Fine grain control is always better.
 6. The VisualEditor extension isn't packaged by default. If you look into the `Dockerfiles/Dockerfile-mwiki`, you see there I `git clone` it.
 7. When specifying ENV, please don't include whitespace. For example, `PARSOID_USER=parsoid` instead of `PARSOID_USER = parsoid`.
+8. As mentioned above, the Parsoid's `config.yaml` is hardcoded. Proceed with caution.
 
 ### TODO
 
