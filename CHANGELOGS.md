@@ -54,9 +54,13 @@ chmod 775 LocalSettings.php
 
 This trick is possible because during the creation of this Docker image, the `UID` of user `www` is mapped to `1000`, which is the typical first user on my linux host.
 
+***
+
 **18 Apr 2018 (Wed)** Tweaking Mediawiki image.
 
 First change: so instead of download the `*.tar.gz` archive, I decided to switch to Git. Current stable branch is `REL1_30`, which is specified in the `Dockerfile-mwiki`. Composer is needed for this to work.
+
+***
 
 **18 Apr 2018 (Wed)** Database with MySQL/MariaDB.
 
@@ -106,6 +110,8 @@ volumes:
 ```
 
 **Abort this installation**. Somehow, MariaDB and MySQL were giving me headache. Specifically, the MediaWiki web installer just could not see the MySQL/MariaDB. But then just after trying it once with Postgres, I got it connected.
+
+***
 
 **18 Apr 2018 (Wed)** Database with Postgres.
 
@@ -166,6 +172,8 @@ mkdir data_wiki
 # bind, no need to map user because both have same UID.
 sudo bindfs /var/lib/docker/volumes/alpinemediawiki_wikidata/_data data_wiki
 ```
+
+***
 
 **18 Apr 2018 (Wed)** NodeJS & Parsoid.
 
