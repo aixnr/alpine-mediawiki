@@ -27,7 +27,15 @@ services:
       POSTGRES_PASSWORD: wiki
     volumes:
       - wikidb:/var/lib/postgresql/data
+  parsoid:
+    image: alpine-parsoid
+    restart: always
+    ports: 
+      - 8000:8000
+    volumes:
+      - parsoid:/var/lib/parsoid
 
 volumes:
   wikidata:
   wikidb:
+  parsoid:
