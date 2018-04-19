@@ -145,7 +145,7 @@ $wgVirtualRestConfig['modules']['parsoid'] = array(
 - [ ] Compose-related.
     - [X] Attempt at creating baseline `docker-compose.yml`.
     - [ ] Mount logo as ReadOnly in Compose.
-- [X] ~Create Alpine 3.7 image for Parsoid~ There's already a `node:9-alpine`. Go from there.
+- [X] ~Create Alpine 3.7 image for Parsoid~ ~There's already a `node:9-alpine`. Go from there~ Just kidding. Used `alpine:3.7` instead due to UID conflict.
 - [ ] How to perform backup and/or migration?
 - [ ] Test behavior with UFW on host.
 
