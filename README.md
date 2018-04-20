@@ -102,16 +102,16 @@ $wgVirtualRestConfig['modules']['parsoid'] = array(
 7. When specifying ENV, please don't include whitespace. For example, `PARSOID_USER=parsoid` instead of `PARSOID_USER = parsoid`.
 8. As mentioned above, the Parsoid's `config.yaml` is hardcoded. Proceed with caution.
 9. Expect problems when running Parsoid for private MediaWiki. [See here](https://www.mediawiki.org/wiki/Extension:VisualEditor), then scroll down.
+10. The logo `wiki.png` is mounted as Read-Only. See my `docker-compose.yml`. Replace the `.png` file with an image of your own, then update `docker-compose.yml` if necessary.
 
 ### TODO
 
 - [X] Change download method from `wget` to `git clone`.
-- [ ] Compose-related.
-    - [X] Attempt at creating baseline `docker-compose.yml`.
-    - [ ] Mount logo as ReadOnly in Compose.
+- [X] Attempt at creating baseline `docker-compose.yml`.
+- [X] Mount logo as ReadOnly in `docker-compose.yml`.
 - [X] ~Create Alpine 3.7 image for Parsoid~ ~There's already a `node:9-alpine`. Go from there~ Just kidding. Used `alpine:3.7` instead due to UID conflict.
 - [ ] How to perform backup and/or migration?
-- [ ] Test behavior with UFW on host.
+- [X] Test behavior with UFW on host.
 - [ ] Test running on HTTPS port 443 on host with Caddy for automated Let's Encrypt.
 
 ### Acknowledgements

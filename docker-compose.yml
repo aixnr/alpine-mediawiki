@@ -13,6 +13,7 @@ services:
       - pg
     volumes:
       - wikidata:/var/www/mediawiki
+      - ./wiki.png:/var/www/mediawiki/resources/assets/wiki.png:ro
     environment:
       MEDIAWIKI_DB_TYPE: postgres
       MEDIAWIKI_DB_HOST: pg
